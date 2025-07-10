@@ -11,13 +11,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+            
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
+          
       - run: npm install
+      - run: npx quasar lint
+      - run: npx quasar test --unit jest
       - run: npx quasar build
-      - uses: peaceiris/actions-gh-pages@v3
+      
+      - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist/spa
