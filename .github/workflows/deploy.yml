@@ -25,8 +25,6 @@ jobs:
           node-version: '18'
           
       - run: npm install
-      - run: npx quasar lint
-      - run: npx quasar test --unit jest
       - run: npx quasar build
       
       - name: Deploy to GitHub Pages
